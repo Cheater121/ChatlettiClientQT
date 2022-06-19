@@ -23,11 +23,12 @@ class MainWindow(QtWidgets.QMainWindow):
         Messagetext = self.InputText1.text()
         Timestamp = str(datetime.datetime.today())
         Recipient = self.Recipient1.text()
-        msg = f"{{\"Username\": \"{Username}\", \"Messagetext\": \"{Messagetext}\", \"Timestamp\": \"{Timestamp}\", \"Recipient\": \"{Recipient}\"}}"
+        msg = f"{{\"Username\": \"{Username}\", \"Messagetext\": \"{Messagetext}\", \"Timestamp\": \"{Timestamp}\", " \
+              f"\"Recipient\": \"{Recipient}\"}} "
         url = self.server_adress + self.api
         data = json.loads(msg)
         requests.post(url, json=data)
-        msgtext = f"{Username}({Timestamp}): {Messagetext}"
+        msgtext = f"{Username} ({Timestamp}): {Messagetext}"
         self.listWidget1.insertItem(self.rows, msgtext)
         self.rows += 1
 
@@ -36,8 +37,9 @@ class MainWindow(QtWidgets.QMainWindow):
         url = self.server_adress + self.api + "/" + Username
         try:
             response = requests.get(url)
-            response.raise_for_status()
-        except HTTPError:
+            if response.status_code != 200:
+                raise AssertionError
+        except AssertionError:
             return None
         except:
             return None
@@ -45,20 +47,23 @@ class MainWindow(QtWidgets.QMainWindow):
             text = response.text
             return text
 
-    def refresh(self): #need to fix
-        msg = self.getmessage()
-        try:
-            messages = json.loads(msg)
-            #here is bug
-            Username = messages["Username"]
-            Messagetext = messages["Messagetext"]
-            Timestamp = messages["Timestamp"]
-            msgtext = f"{Username}({Timestamp}): {Messagetext}"
-            self.listWidget1.insertItem(self.rows, msgtext)
-            self.rows += 1
-        except:
-            print("Ooops")
-
+    def refresh(self):
+        answer = self.getmessage()
+        if answer != "Not found" and answer is not None:
+            answer = json.loads(answer)
+            try:
+                UserNM = self.Username1.text()
+                messages = answer.get(UserNM)
+                for msg in messages:
+                    Username = msg["Username"]
+                    Messagetext = msg["Messagetext"]
+                    Timestamp = msg["Timestamp"]
+                    msgtext = f"{Username} ({Timestamp}): {Messagetext}"
+                    self.listWidget1.insertItem(self.rows, msgtext)
+                    self.rows += 1
+            except:
+                print("Ooops")
+                None
 
 
 if __name__ == '__main__':
