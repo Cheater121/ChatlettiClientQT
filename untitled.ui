@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="SendButton">
+   <widget class="QPushButton" name="SendButton1">
     <property name="geometry">
      <rect>
       <x>620</x>
@@ -47,7 +47,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="Recipient">
+   <widget class="QLineEdit" name="Recipient1">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -57,7 +57,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="Username1">
     <property name="geometry">
      <rect>
       <x>10</x>
