@@ -11,7 +11,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-        uic.loadUi('untitled.ui', self)
+        uic.loadUi('messenger.ui', self)
         self.SendButton1.clicked.connect(self.SendButton1_clicked)
         self.RefreshButton.clicked.connect(self.refresh)
 
