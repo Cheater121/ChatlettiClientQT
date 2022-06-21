@@ -2,7 +2,7 @@ import sys
 import datetime
 import json
 import requests
-from PyQt6 import uic, QtWidgets
+from PyQt6 import uic, QtWidgets, QtCore
 
 class MainWindow(QtWidgets.QMainWindow):
     server_adress = "https://chatletti.ru"
@@ -13,7 +13,6 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         uic.loadUi('messenger.ui', self)
         self.SendButton1.clicked.connect(self.SendButton1_clicked)
-        self.RefreshButton.clicked.connect(self.refresh)
 
     def SendButton1_clicked(self):
         self.sendmessage()
@@ -70,5 +69,9 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     w = MainWindow()
     w.show()
+    timer = QtCore.QTimer()
+    time = QtCore.QTime(0, 0, 0)
+    timer.timeout.connect(w.refresh)
+    timer.start(5000)
     sys.exit(app.exec())
 
