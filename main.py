@@ -4,9 +4,11 @@ import json
 import requests
 from PyQt6 import uic, QtWidgets, QtCore
 
+
+# pyinstaller -F --add-data "messenger.ui;." --hidden-import=requests --hidden-import=PyQt6 --noconsole --onefile main.py
 class MainWindow(QtWidgets.QMainWindow):
-    server_adress = "https://chatletti.ru"
-    api = "/api/messenger"
+    host = "https://chatletti.ru"
+    path = "/api/messenger"
     rows = 0
 
     def __init__(self, *args, **kwargs):
@@ -15,25 +17,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.SendButton1.clicked.connect(self.SendButton1_clicked)
 
     def SendButton1_clicked(self):
-        self.sendmessage()
+        self.make_send_show_message()
 
-    def sendmessage(self):
-        Username = self.Username1.text()
-        Messagetext = self.InputText1.text()
-        Timestamp = str(datetime.datetime.today())
-        Recipient = self.Recipient1.text()
-        msg = f"{{\"Username\": \"{Username}\", \"Messagetext\": \"{Messagetext}\", \"Timestamp\": \"{Timestamp}\", " \
-              f"\"Recipient\": \"{Recipient}\"}} "
-        url = self.server_adress + self.api
-        data = json.loads(msg)
-        requests.post(url, json=data)
-        msgtext = f"{Username} ({Timestamp}): {Messagetext}"
+    # main function - sending message to the server
+    def make_send_show_message(self):
+        # making message
+        username = self.Username1.text()
+        messagetext = self.InputText1.text()
+        timestamp = str(datetime.datetime.today())
+        recipient = self.Recipient1.text()
+        msg_dict = f"{{\"Username\": \"{username}\", \"Messagetext\": \"{messagetext}\", \"Timestamp\": \"{timestamp}\", " \
+              f"\"Recipient\": \"{recipient}\"}} "
+        msg_json = json.loads(msg_dict)
+        # sending message
+        url = self.host + self.path
+        requests.post(url, json=msg_json)
+        # showing message to user
+        msgtext = f"{username} ({timestamp}): {messagetext}"
         self.listWidget1.insertItem(self.rows, msgtext)
         self.rows += 1
 
+    # main function - getting message from the server
     def getmessage(self):
-        Username = self.Username1.text()
-        url = self.server_adress + self.api + "/" + Username
+        username = self.Username1.text()
+        url = self.host + self.path + "/" + username
         try:
             response = requests.get(url)
             if response.status_code != 200:
@@ -51,13 +58,13 @@ class MainWindow(QtWidgets.QMainWindow):
         if answer != "Not found" and answer is not None:
             answer = json.loads(answer)
             try:
-                UserNM = self.Username1.text()
-                messages = answer.get(UserNM)
+                user_nm = self.Username1.text()
+                messages = answer.get(user_nm)
                 for msg in messages:
-                    Username = msg["Username"]
-                    Messagetext = msg["Messagetext"]
-                    Timestamp = msg["Timestamp"]
-                    msgtext = f"{Username} ({Timestamp}): {Messagetext}"
+                    username = msg["Username"]
+                    messagetext = msg["Messagetext"]
+                    timestamp = msg["Timestamp"]
+                    msgtext = f"{username} ({timestamp}): {messagetext}"
                     self.listWidget1.insertItem(self.rows, msgtext)
                     self.rows += 1
             except:
@@ -74,4 +81,3 @@ if __name__ == '__main__':
     timer.timeout.connect(w.refresh)
     timer.start(5000)
     sys.exit(app.exec())
-
