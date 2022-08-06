@@ -5,7 +5,7 @@ import requests
 from PyQt6 import uic, QtWidgets, QtCore
 
 
-# pyinstaller -F --add-data "messenger.ui;." --hidden-import=requests --hidden-import=PyQt6 --noconsole --onefile main.py
+# pyinstaller --add-data "messenger.ui;." --hidden-import=requests --hidden-import=PyQt6 --noconsole main.py
 class MainWindow(QtWidgets.QMainWindow):
     host = "https://chatletti.ru"
     path = "/api/messenger"
@@ -45,8 +45,6 @@ class MainWindow(QtWidgets.QMainWindow):
             response = requests.get(url)
             if response.status_code != 200:
                 raise AssertionError
-        except AssertionError:
-            return None
         except:
             return None
         else:
